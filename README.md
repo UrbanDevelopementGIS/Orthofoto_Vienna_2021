@@ -1,4 +1,4 @@
-# tiles-to-tiff
+# Script for Downloading WMTS Tiles from the City of Vienna's Orthofoto 2021
 # This is a Fork of jimutt's tiles-to-tiff for retrieving the 2021 Orthofoto of the City of Vienna in 15cm² resolution
 Python script for converting XYZ raster tiles for WMTS to a georeferenced TIFF image. 
 
