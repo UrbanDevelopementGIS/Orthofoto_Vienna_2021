@@ -9,27 +9,29 @@ from osgeo import gdal
 
 #---------- CONFIGURATION -----------#
 # Option 1: Online source
-tile_source = "https://api.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=" + os.environ.get('MAPBOX_ACCESS_TOKEN')
-
+# This Script is hardcoded to request zoomlevel 20
+# In order to change this insert desired zoomlevel between google3857/ and /{x}
+tile_source = "http://maps.wien.gv.at/wmts/lb/farbe/google3857/20/{x}/{y}.jpeg"
 # Option 2: Local file system source
 #tile_source = "file:///D:/path_to/local_tiles/{z}/{x}/{y}.png"
 
 temp_dir = os.path.join(os.path.dirname(__file__), 'temp')
 output_dir = os.path.join(os.path.dirname(__file__), 'output')
-zoom = 16
-lon_min = 21.49147
-lon_max = 21.5
-lat_min = 65.31016
-lat_max = 65.31688
+zoom = 20
+lon_min = 16.17 
+lon_max = 16.58
+lat_min = 48.10
+lat_max = 48.33
 #-----------------------------------#
 
 
+url = ""
 def fetch_tile(x, y, z, tile_source):
+    global url 
     url = tile_source.replace(
         "{x}", str(x)).replace(
-        "{y}", str(y)).replace(
-        "{z}", str(z))
-    path = f'{temp_dir}/{x}_{y}_{z}.png'
+        "{y}", str(y))
+    path = f'{temp_dir}/{x}_{y}.png'
     urllib.request.urlretrieve(url, path)
     return(path)
 
@@ -48,12 +50,13 @@ def georeference_raster_tile(x, y, z, path):
     filename, extension = os.path.splitext(path)
     gdal.Translate(filename + '.tif',
                    path,
-                   outputSRS='EPSG:4326',
+                   outputSRS='EPSG:3857',
                    outputBounds=bounds)
 
 
-x_min, x_max, y_min, y_max = bbox_to_xyz(
-    lon_min, lon_max, lat_min, lat_max, zoom)
+#Hardcoded and found values with QGIS WMTS Orthofoto 2021 and QGIS Network Logger Plugin
+x_min, x_max, y_min, y_max = 363059, 364030 ,571386, 572580
+
 
 print(f"Fetching {(x_max - x_min + 1) * (y_max - y_min + 1)} tiles")
 
@@ -65,6 +68,9 @@ for x in range(x_min, x_max + 1):
             georeference_raster_tile(x, y, zoom, png_path)
         except OSError:
             print(f"{x},{y} missing")
+            print(tile_source.replace(
+            "{x}", str(x)).replace(
+            "{y}", str(y)))
             pass
 
 print("Fetching of tiles complete")
