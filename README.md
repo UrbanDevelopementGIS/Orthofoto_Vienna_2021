@@ -1,4 +1,5 @@
 # tiles-to-tiff
+# This is a Fork of jimutt's tiles-to-tiff for retrieving the 2021 Orthofoto of the City of Vienna in 15cm² resolution
 Python script for converting XYZ raster tiles for slippy maps to a georeferenced TIFF image. Written for this tutorial: https://dev.to/jimutt/generate-merged-geotiff-imagery-from-web-maps-xyz-tile-servers-with-python-4d13
 
 ## Prerequisites:
