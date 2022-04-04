@@ -9,9 +9,14 @@ from osgeo import gdal
 
 #---------- CONFIGURATION -----------#
 # Option 1: Online source
-# This Script is hardcoded to request zoomlevel 20
+
+# This Script is hardcoded to request zoomlevel 20 which is a resolution of 15cm² per pixel
 # In order to change this insert desired zoomlevel between google3857/ and /{x}
 tile_source = "http://maps.wien.gv.at/wmts/lb/farbe/google3857/20/{x}/{y}.jpeg"
+#Y-Axis is East-West:  Minimum: 571386, Maximum: 572580
+#X-Axis is North-Sout: Minimum: 363059, Maximum: 364030
+
+
 # Option 2: Local file system source
 #tile_source = "file:///D:/path_to/local_tiles/{z}/{x}/{y}.png"
 
@@ -23,7 +28,6 @@ lon_max = 16.58
 lat_min = 48.10
 lat_max = 48.33
 #-----------------------------------#
-
 
 url = ""
 def fetch_tile(x, y, z, tile_source):
@@ -50,13 +54,14 @@ def georeference_raster_tile(x, y, z, path):
     filename, extension = os.path.splitext(path)
     gdal.Translate(filename + '.tif',
                    path,
-                   outputSRS='EPSG:3857',
+                   outputSRS='EPSG:4326',
                    outputBounds=bounds)
-
 
 #Hardcoded and found values with QGIS WMTS Orthofoto 2021 and QGIS Network Logger Plugin
 x_min, x_max, y_min, y_max = 363059, 364030 ,571386, 572580
 
+#X-Axis is North-Sout: Minimum: 363059, Maximum: 364030
+#bbox_to_xyz(lon_min, lon_max, lat_min, lat_max, zoom)
 
 print(f"Fetching {(x_max - x_min + 1) * (y_max - y_min + 1)} tiles")
 
@@ -69,8 +74,8 @@ for x in range(x_min, x_max + 1):
         except OSError:
             print(f"{x},{y} missing")
             print(tile_source.replace(
-            "{x}", str(x)).replace(
-            "{y}", str(y)))
+        "{x}", str(x)).replace(
+        "{y}", str(y)))
             pass
 
 print("Fetching of tiles complete")
